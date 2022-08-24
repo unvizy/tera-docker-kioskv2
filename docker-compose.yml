@@ -1,0 +1,39 @@
+version: '2'
+services:
+  web:
+    build:
+       dockerfile: ./nginx/Dockerfile
+       context: "."
+    image: tera-php-nginx:v1
+    volumes:
+    - ./sources/:/app
+    container_name: webserver_kioskv2
+    networks:
+      terakorp_networks:
+        ipv4_address: 172.28.0.2
+    ports:
+    - "7044:7044"
+    links:
+      - "php"
+    restart: always
+
+
+  php:
+    build:
+       dockerfile: ./php/Dockerfile
+       context: "."
+    image: tera-php-fpm:v1
+    container_name: php_terakorp
+    ports:
+      - "9000:9000"
+    networks:
+      terakorp_networks:
+        ipv4_address: 172.28.0.3  
+    volumes:
+    - ./sources/:/app
+      
+networks:
+  terakorp_networks:
+    ipam:
+      config:
+          - subnet: 172.28.0.0/28
